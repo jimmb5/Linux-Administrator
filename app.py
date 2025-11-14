@@ -42,7 +42,7 @@ def home():
         </style>
     </head>
     <body>
-        <h1>LEMP Python app toimii!</h1>
+        <h1>LEMP Python app toimii!!</h1>
         <p>Aika databasesta haettuna: <strong>{result[0]}</strong></p>
         <p>Tämä sivu noudattaa tehtävän antoa ja githubia on käytetty.</p>
         <p style="margin-top: 30px;">
