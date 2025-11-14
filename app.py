@@ -45,6 +45,11 @@ def home():
         <h1>LEMP Python app toimii!</h1>
         <p>Aika databasesta haettuna: <strong>{result[0]}</strong></p>
         <p>Tämä sivu noudattaa tehtävän antoa ja githubia on käytetty.</p>
+        <p style="margin-top: 30px;">
+            <a href="/data-analysis" style="display: inline-block; padding: 10px 20px; background-color: #0077cc; color: white; text-decoration: none; border-radius: 5px; font-size: 1.1em;">
+                 Tästä data analysis sivulle
+            </a>
+        </p>
     </body>
     </html>
     """
