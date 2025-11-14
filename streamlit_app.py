@@ -22,6 +22,7 @@ st.title("Data analyysi kiihtyvyydestä")
 st.write("Mitattu puhelimella phyphox sovelluksella")
 
 conn = get_db_connection()
+cursor = None
 
 if conn:
     try:
@@ -55,5 +56,7 @@ if conn:
     except mysql.connector.Error as e:
         pass
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
