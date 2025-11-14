@@ -8,7 +8,6 @@ st.set_page_config(
     layout="wide"
 )
 
-@st.cache_resource
 def get_db_connection():
     conn = mysql.connector.connect(
         host="localhost",
