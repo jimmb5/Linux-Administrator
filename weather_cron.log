@@ -1,0 +1,8 @@
+Data tallennettu: Helsinki 2.04°C broken clouds
+Data tallennettu: Helsinki 2.04°C broken clouds
+Data tallennettu: Oulu -6.61°C broken clouds
+Traceback (most recent call last):
+  File "/home/ubuntu/lemp-app/fetch_weather.py", line 16, in <module>
+    temp = data['main']['temp']
+           ~~~~^^^^^^^^
+KeyError: 'main'
