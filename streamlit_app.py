@@ -102,3 +102,35 @@ except mysql.connector.Error:
 finally:
     if weather_conn:
         weather_conn.close()
+
+st.divider()
+st.header("Sähkön hinta c/kWh")
+
+electric_conn = None
+
+try:
+    electric_conn = get_weather_connection()
+    electric_df = pd.read_sql(
+        "SELECT area, price_cents, start_time FROM electric_prices ORDER BY start_time DESC LIMIT 48",
+        electric_conn
+    )
+
+    if not electric_df.empty:
+        chart_df = electric_df.sort_values("start_time")
+        fig_price = px.line(
+            chart_df,
+            x="start_time",
+            y="price_cents",
+            color="area",
+            markers=True,
+            title="Viimeisimmät pörssisähkön hinnat"
+        )
+        fig_price.update_layout(xaxis_title="Aika", yaxis_title="Snt/kWh")
+        st.plotly_chart(fig_price, use_container_width=True)
+    else:
+        st.info("Sähkön hintadataa ei löytynyt tietokannasta.")
+except mysql.connector.Error:
+    st.error("Yhteys sähkön hintadataan epäonnistui.")
+finally:
+    if electric_conn:
+        electric_conn.close()
