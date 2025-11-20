@@ -111,7 +111,7 @@ electric_conn = None
 try:
     electric_conn = get_weather_connection()
     electric_df = pd.read_sql(
-        "SELECT area, price_cents, start_time FROM electric_prices ORDER BY start_time DESC LIMIT 48",
+        "SELECT price_cents, start_time FROM electric_prices ORDER BY start_time DESC LIMIT 48",
         electric_conn
     )
 
@@ -121,7 +121,6 @@ try:
             chart_df,
             x="start_time",
             y="price_cents",
-            color="area",
             markers=True,
             title="Viimeisimmät pörssisähkön hinnat"
         )
