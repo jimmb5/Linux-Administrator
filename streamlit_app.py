@@ -17,6 +17,16 @@ def get_db_connection():
     )
     return conn
 
+
+def get_weather_connection():
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="exampleuser",
+        password="change_this_strong_password",
+        database="weather_db"
+    )
+    return conn
+
 st.title("Data analyysi kiihtyvyydestä")
 st.write("Mitattu puhelimella phyphox sovelluksella")
 
@@ -59,3 +69,36 @@ if conn:
             cursor.close()
         if conn:
             conn.close()
+
+st.divider()
+st.header("Säädata Helsingistä")
+
+weather_conn = None
+
+try:
+    weather_conn = get_weather_connection()
+    weather_df = pd.read_sql(
+        "SELECT city, temperature, description, timestamp FROM weather_data ORDER BY timestamp DESC LIMIT 50",
+        weather_conn
+    )
+
+    if not weather_df.empty:
+        st.dataframe(weather_df)
+
+        fig_temp = px.line(
+            weather_df.sort_values("timestamp"),
+            x="timestamp",
+            y="temperature",
+            color="city",
+            markers=True,
+            title="Lämpötilan kehitys"
+        )
+        fig_temp.update_layout(xaxis_title="Aika", yaxis_title="Lämpötila")
+        st.plotly_chart(fig_temp, use_container_width=True)
+    else:
+        st.info("Säädataa ei löytynyt tietokannasta.")
+except mysql.connector.Error:
+    st.error("Yhteys säädataan epäonnistui.")
+finally:
+    if weather_conn:
+        weather_conn.close()
