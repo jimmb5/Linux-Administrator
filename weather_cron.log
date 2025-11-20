@@ -6,3 +6,4 @@ Traceback (most recent call last):
     temp = data['main']['temp']
            ~~~~^^^^^^^^
 KeyError: 'main'
+Data tallennettu: Oulu -6.61°C broken clouds

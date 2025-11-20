@@ -71,7 +71,7 @@ if conn:
             conn.close()
 
 st.divider()
-st.header("Säädata Helsingistä")
+st.header("Säädataa")
 
 weather_conn = None
 
