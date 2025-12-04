@@ -1,0 +1,5 @@
+kubectl
+minikube-linux-amd64
+.env
+mysql-secret.yaml
+

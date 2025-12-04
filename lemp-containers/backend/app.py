@@ -1,37 +1,57 @@
 from flask import Flask, jsonify
-import os
 import mysql.connector
+import os
 
 app = Flask(__name__)
 
-DB_HOST = os.getenv('DB_HOST', 'db')
-DB_USER = os.getenv('DB_USER', 'appuser')
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'changeme')
-DB_NAME = os.getenv('DB_NAME', 'appdb')
-
-
-@app.get('/api/health')
-def health():
-    return {'status': 'ok'}
-
-
-@app.get('/api')
-def index():
-    """Simple endpoint that greets from DB."""
-    conn = mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
+def get_db_connection():
+    return mysql.connector.connect(
+        host=os.getenv('DB_HOST', 'mysql'),
+        user=os.getenv('DB_USER', 'appuser'),
+        password=os.getenv('DB_PASSWORD', 'apppassword123'),
+        database=os.getenv('DB_NAME', 'appdb')
     )
-    cur = conn.cursor()
-    cur.execute("SELECT 'Hello from MySQL via Flask!'")
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
-    return jsonify(message=row[0])
 
+@app.route('/api/health')
+def health():
+    return jsonify({"status": "healthy"})
+
+@app.route('/api/users')
+def get_users():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(users)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/init-db')
+def init_db():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100),
+                email VARCHAR(100)
+            )
+        """)
+        cursor.execute("""
+            INSERT INTO users (name, email) VALUES
+            ('John Doe', 'john@example.com'),
+            ('Jane Smith', 'jane@example.com')
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"message": "Database initialized"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Dev-only fallback
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
