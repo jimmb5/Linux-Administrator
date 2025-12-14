@@ -175,20 +175,6 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"ghcr"}]}'
 
-      - name: Create Secrets and ConfigMaps
-        run: |
-          # Create ConfigMap
-          kubectl apply -f lemp-containers/kubernetes/backend-configmap.yaml
-          
-          # Create Secrets (mysql-secret)
-          # Note: In production, consider using a more secure way to manage secrets (e.g., SealedSecrets, Vault)
-          kubectl create secret generic mysql-secret \
-            --from-literal=MYSQL_ROOT_PASSWORD='${{ secrets.MYSQL_ROOT_PASSWORD }}' \
-            --from-literal=MYSQL_DATABASE='appdb' \
-            --from-literal=MYSQL_USER='appuser' \
-            --from-literal=MYSQL_PASSWORD='${{ secrets.MYSQL_PASSWORD }}' \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Update image tags in Kubernetes manifests
         run: |
           # Get short SHA to match docker metadata action default
