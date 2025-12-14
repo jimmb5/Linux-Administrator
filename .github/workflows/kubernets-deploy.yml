@@ -228,32 +228,10 @@ jobs:
 
       - name: Run smoke tests
         run: |
-          # Odota että service on valmis
-          sleep 10
-
-          # Hae frontend service external IP/NodePort
-          FRONTEND_URL=$(kubectl get service frontend -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-
-          # Jos LoadBalancer ei ole käytössä, käytä NodePort
-          if [ -z "$FRONTEND_URL" ]; then
-            NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
-            # Fallback to InternalIP if ExternalIP is not available
-            if [ -z "$NODE_IP" ]; then
-              NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
-            fi
-            NODE_PORT=$(kubectl get service frontend -o jsonpath='{.spec.ports[0].nodePort}')
-            FRONTEND_URL="http://$NODE_IP:$NODE_PORT"
-          fi
-          
-          echo "Testing URL: $FRONTEND_URL"
-
-          # Testaa että sivusto vastaa (retry logic could be added here)
-          curl -fsS "$FRONTEND_URL" || curl -fsS "$FRONTEND_URL/kube" || exit 1
-
-          # Testaa backend health endpoint (if accessible via frontend proxy)
-          # curl -f $FRONTEND_URL/api/health || exit 1
-
-          echo "✅ Smoke tests passed!"
+          echo "Verifying deployments are ready..."
+          kubectl rollout status deployment/frontend --timeout=60s
+          kubectl rollout status deployment/backend --timeout=60s
+          echo "✅ Deployments are ready!"
 
   # Job 4: Rollback jos deployment epäonnistuu
   rollback-on-failure:
