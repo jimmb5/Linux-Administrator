@@ -42,3 +42,4 @@ def test_get_db_connection_uses_env_vars(monkeypatch):
         "password": "db-pass",
         "database": "db-name",
     }
+

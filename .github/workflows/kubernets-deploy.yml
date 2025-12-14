@@ -132,6 +132,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
+    permissions:
+      contents: read
+      packages: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -146,6 +150,16 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
+
+      - name: Configure GHCR image pull access (cluster)
+        run: |
+          # Allow the cluster to pull private images from GHCR.
+          kubectl create secret docker-registry ghcr \
+            --docker-server="${{ env.REGISTRY }}" \
+            --docker-username="${{ github.actor }}" \
+            --docker-password="${{ secrets.GITHUB_TOKEN }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"ghcr"}]}'
 
       - name: Create Secrets and ConfigMaps
         run: |
