@@ -8,8 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
-  IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
+  # IMAGE_NAME_FRONTEND ja BACKEND asetetaan dynaamisesti stepissä, koska env-osiossa ei voi ajaa shell-komentoja lowercase-muunnokseen helposti
 
 jobs:
   # Job 1: Build ja testaa frontend
@@ -22,6 +21,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set lowercase image names
+        run: |
+          echo "IMAGE_NAME_FRONTEND=${GITHUB_REPOSITORY,,}/frontend" >> $GITHUB_ENV
+          echo "IMAGE_NAME_BACKEND=${GITHUB_REPOSITORY,,}/backend" >> $GITHUB_ENV
 
       # Docker build ja push
       - name: Log in to Container Registry
@@ -74,6 +78,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set lowercase image names
+        run: |
+          echo "IMAGE_NAME_FRONTEND=${GITHUB_REPOSITORY,,}/frontend" >> $GITHUB_ENV
+          echo "IMAGE_NAME_BACKEND=${GITHUB_REPOSITORY,,}/backend" >> $GITHUB_ENV
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -139,6 +148,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set lowercase image names
+        run: |
+          echo "IMAGE_NAME_FRONTEND=${GITHUB_REPOSITORY,,}/frontend" >> $GITHUB_ENV
+          echo "IMAGE_NAME_BACKEND=${GITHUB_REPOSITORY,,}/backend" >> $GITHUB_ENV
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
