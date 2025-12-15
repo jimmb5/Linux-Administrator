@@ -56,6 +56,13 @@
             <button onclick="getUsers()">Get Users</button>
         </div>
 
+        <hr>
+        <h3>Kokeile lisätä tietokantaan tietoja</h3>
+        nimi: <input id="uName">
+        Email: <input id="uEmail">
+        <button onclick="addUser()">lähetä</button>
+        <hr>
+
         <div id="result"></div>
     </div>
 
@@ -92,6 +99,21 @@
             } catch (error) {
                 resultDiv.textContent = 'Error: ' + error.message;
             }
+        }
+
+        async function addUser() {
+            const name = document.getElementById('uName').value;
+            const email = document.getElementById('uEmail').value;
+            
+            await fetch('api/users', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, email })
+            });
+            
+            document.getElementById('uName').value = '';
+            document.getElementById('uEmail').value = '';
+            getUsers();
         }
     </script>
 </body>
